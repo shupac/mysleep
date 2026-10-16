@@ -181,7 +181,10 @@ and shared bundle identifier.
 This started as a Swift port of the existing eightctl API integration. The report
 adapter also supports the v3 schema observed in an official-app capture on
 2026-10-15. See [provenance](docs/provenance.md) and the prior
-[API notes](eightctl-api-notes.md).
+[API notes](docs/eightctl-api-notes.md).
+The [capture reference](docs/captured-api-reference.md) inventories the observed
+requests; the [privacy review](docs/capture-privacy-review.md) explains why raw
+recordings stay excluded from Git.
 
 - Login uses the existing OAuth password grant. Tokens are reused until their
   expiry minus 60 seconds. Expiry/rejection triggers another password login;

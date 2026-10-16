@@ -20,10 +20,10 @@ promptly rather than retrying earlier than permitted. The service imposes a
 one-minute cooldown after failures, keeping Siri latency and login traffic bounded.
 No provider response bodies or credentials are logged or exposed in error text.
 
-No new API endpoints were discovered or contacted for this implementation. Raw
-HRV, snoring, and precise sleep timestamps aren't established by the old typed
-parser. Their optional projections and limitations are documented in the README;
-synthetic fixtures are test cases, not evidence of live provider support.
+The initial implementation reused those endpoints. Later user-supplied captures
+established additional endpoints and the v3 schema described below. No live API
+requests were made to audit those captures. Synthetic fixtures remain test cases;
+source observations and implementation limits are documented separately.
 
 The reused eightctl portions are covered by the accompanying
 [eightctl MIT license](eightctl-LICENSE.txt).
@@ -96,3 +96,14 @@ restricted to starts within 36 hours to avoid editing old records. No active
 candidate produces an explicit error. Writes retain the existing no-transient-
 retry policy. The next report bypasses the local freshness cache. Synthetic
 fixtures test the contract; no live provider writes were made during development.
+
+
+## Capture audit and full inventory — 2026-10-16
+
+See the [complete captured API reference](captured-api-reference.md) for all 53
+observed Eight Sleep method/host/path combinations and their flow references,
+including the official app's temperature/pod power writes. The
+[privacy review](capture-privacy-review.md) records the decision to retain the raw
+archives locally and exclude them from Git because they contain tokens and
+personal account, device, and sleep data. The earlier eightctl-only notes now
+live in [eightctl-api-notes.md](eightctl-api-notes.md).

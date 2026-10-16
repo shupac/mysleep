@@ -1,3 +1,7 @@
+> This document describes the earlier eightctl-derived contract. For the later
+> official iPhone app captures (including v3 Trends, refresh-token auth and
+> interval stopping), see [captured-api-reference.md](captured-api-reference.md).
+
 # Eight Sleep cloud API, traced from eightctl
 
 Inspected 2026-10-14. Source: `/Users/shu/code/eightctl`, commit
