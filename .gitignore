@@ -1,0 +1,43 @@
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+*.p12
+*.p8
+*.mobileprovision
+
+# Network captures can contain account tokens and personal sleep data
+*.proxymansession
+*.proxymansessionv2
+*.har
+*.pcap
+*.pcapng
+
+# Swift / Xcode build outputs and per-user settings
+.build/
+.build-*/
+DerivedData/
+build/
+*.xcarchive/
+*.xcresult/
+*.ipa
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+
+# Python and web development caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+node_modules/
+.wrangler/
+
+# Local tooling and operating-system files
+.DS_Store
+*.log
+.idea/
+.vscode/

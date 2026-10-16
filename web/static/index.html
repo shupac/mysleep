@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MySleep · Sleep, in focus</title>
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <header><a href="/" class="brand"><span class="brand-icon">◒</span> MySleep<span class="edition">LOCAL CLIENT</span></a><span id="connection" class="pill">Not connected</span></header>
+  <main>
+    <section class="intro"><div class="eyebrow">A LITTLE CLARITY, EVERY MORNING</div><h1>Your night,<br><span>in focus.</span></h1><p>Your sleep and biometrics, with a clear view of the data behind them.</p></section>
+    <section id="connect-panel" class="panel connect-panel">
+      <div><div class="eyebrow">CONNECT YOUR POD</div><h2>Good morning.</h2><p>Sign in with your Eight Sleep account. Your credentials stay in this local server’s memory and go only to Eight Sleep.</p></div>
+      <form id="login-form">
+        <label>Email<input name="email" type="email" autocomplete="username" placeholder="you@example.com" required></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+        <label>Time zone<input id="timezone" name="timezone" required value="America/Los_Angeles"></label>
+        <button type="submit" class="primary">Connect & fetch report <span>↗</span></button>
+        <button type="button" id="demo">Explore with demo data</button>
+      </form>
+    </section>
+    <div id="notification" class="notification" role="status" aria-live="polite" hidden></div>
+    <section id="workspace" hidden>
+      <div class="section-heading"><div><div class="eyebrow">YOUR LATEST COMPLETED SLEEP</div><h2 id="report-date">Waiting for your report</h2></div><div class="actions"><button id="refresh">↻ Refresh report</button><button id="disconnect" class="quiet">Disconnect</button></div></div>
+      <div id="empty-report" class="panel empty" hidden><h3>No completed report returned</h3><p>Check the diagnostic details below to see whether the request failed or the response couldn’t be parsed.</p></div>
+      <div id="report-content" hidden>
+        <div class="report-grid">
+          <article class="panel score-card"><h3>Overall</h3><div class="score"><span id="score">—</span><small>/ 100</small></div><div class="eyebrow">SLEEP SCORE</div><p id="score-note">Latest completed report</p></article>
+          <article class="panel vitals-card"><h3>Biometrics</h3><div class="vitals"><div><span class="metric-icon">♡</span><span>HR</span><strong id="heart-rate">—</strong><small>bpm</small></div><div><span class="metric-icon">⌁</span><span>HRV</span><strong id="hrv">—</strong><small>ms</small></div></div></article>
+          <article class="panel timing"><h3>Duration</h3><dl><div><dt>Total</dt><dd id="total-sleep">—</dd></div><div><dt>Deep</dt><dd id="deep-sleep">—</dd></div><div><dt>REM</dt><dd id="rem-sleep">—</dd></div><div class="timing-start"><dt id="bedtime-label">Bedtime</dt><dd id="bedtime">—</dd></div><div><dt id="wake-label">Wake time</dt><dd id="wake-time">—</dd></div></dl></article>
+        </div>
+        <p id="report-meta" class="muted small"></p>
+      </div>
+      <details id="pod-panel" class="panel controls"><summary>Pod controls <span class="muted small">On demand · your saved profile</span></summary><div class="control-content"><p id="pod-status">Refresh status before sending a command.</p><div class="actions"><button id="pod-refresh">Refresh Pod status</button><button id="pod-on" data-control disabled>Turn on</button><button id="pod-off" data-control disabled>End sleep / turn off</button></div><form id="temperature-form"><label>Target temperature <span id="temperature-value">80°F</span><input id="temperature" type="range" min="55" max="110" step="1" value="80"></label><button type="submit" data-control disabled>Apply temperature</button></form><p class="muted small">End sleep turns off heating/cooling for your profile. We have not verified that this starts report processing. Applying a temperature enables heating/cooling.</p></div></details>
+    </section>
+    <details id="diagnostic-panel" class="panel diagnostics"><summary><span>Request diagnostics <span id="request-count" class="tiny">0 REQUESTS</span></span><button id="copy-diagnostics" type="button">Copy diagnostics</button></summary><div class="diagnostic-content"><p class="muted small">Uses the same Swift client and parser as the native app. Shows endpoints, HTTP status, timing, and report structure. Passwords, tokens, account IDs, and raw response bodies are excluded.</p><div id="diagnostic-empty" class="diagnostic-empty">Your next request will appear here.</div><div id="diagnostic-list"></div></div></details>
+    <footer><span>MY SLEEP. MY MORNING.</span><span>Local on your Mac · Not affiliated with Eight Sleep</span></footer>
+  </main>
+</body>
+</html>

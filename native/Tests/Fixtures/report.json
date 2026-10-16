@@ -1,0 +1,36 @@
+{
+  "report": {
+    "schemaVersion": 1,
+    "date": "2026-10-14",
+    "timezone": "America/Los_Angeles",
+    "bedtime": "2026-10-14T05:30:00Z",
+    "wakeTime": "2026-10-14T13:30:00Z",
+    "score": 88,
+    "totalSleepSeconds": 27000,
+    "stages": {
+      "deep": {
+        "seconds": 5400,
+        "percent": 20
+      },
+      "rem": {
+        "seconds": 5400,
+        "percent": 20
+      },
+      "light": {
+        "seconds": 16200,
+        "percent": 60
+      }
+    },
+    "heartRateBpm": 56,
+    "hrvMs": 42,
+    "hrvScore": null,
+    "respiratoryRate": 14.2,
+    "awakeSeconds": 1800,
+    "snoringSeconds": 120,
+    "missingMetrics": [],
+    "timesArePresence": true
+  },
+  "fetchedAt": "2026-10-14T14:00:00Z",
+  "stale": false,
+  "warning": null
+}

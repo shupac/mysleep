@@ -1,0 +1,703 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		000000000000000000000018 /* Core/Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000015 /* Core/Report.swift */; };
+		000000000000000000000019 /* Core/SleepScoreSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000016 /* Core/SleepScoreSnapshot.swift */; };
+		00000000000000000000001A /* Complication/SleepScoreComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000017 /* Complication/SleepScoreComplication.swift */; };
+		000000000000000000000022 /* Core/Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000001 /* Core/Configuration.swift */; };
+		000000000000000000000023 /* Core/EightClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000002 /* Core/EightClient.swift */; };
+		000000000000000000000024 /* Core/Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000003 /* Core/Keychain.swift */; };
+		000000000000000000000025 /* Core/Pod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000004 /* Core/Pod.swift */; };
+		000000000000000000000026 /* Core/Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000005 /* Core/Report.swift */; };
+		000000000000000000000027 /* Core/ReportCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000006 /* Core/ReportCache.swift */; };
+		000000000000000000000028 /* Core/ReportParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000007 /* Core/ReportParser.swift */; };
+		000000000000000000000029 /* Core/SleepScoreSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000008 /* Core/SleepScoreSnapshot.swift */; };
+		00000000000000000000002A /* Core/SleepService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000009 /* Core/SleepService.swift */; };
+		00000000000000000000002B /* Core/SleepSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000A /* Core/SleepSummary.swift */; };
+		00000000000000000000002C /* Core/Transport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000B /* Core/Transport.swift */; };
+		00000000000000000000002D /* App/MySleepApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000C /* App/MySleepApp.swift */; };
+		00000000000000000000002E /* App/PodStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000D /* App/PodStore.swift */; };
+		00000000000000000000002F /* App/PodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000E /* App/PodView.swift */; };
+		000000000000000000000030 /* App/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000F /* App/SettingsView.swift */; };
+		000000000000000000000031 /* App/SleepIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000010 /* App/SleepIntent.swift */; };
+		000000000000000000000032 /* App/SleepStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000011 /* App/SleepStore.swift */; };
+		000000000000000000000033 /* App/SleepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000012 /* App/SleepView.swift */; };
+		000000000000000000000036 /* Fixtures/demo.json in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000013 /* Fixtures/demo.json */; };
+		000000000000000000000037 /* App/MySleepAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000014 /* App/MySleepAssets.xcassets */; };
+		000000000000000000000039 /* MySleepComplication.appex in Embed Complication */ = {isa = PBXBuildFile; fileRef = 00000000000000000000001C /* MySleepComplication.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		000000000000000000000041 /* Core/Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000001 /* Core/Configuration.swift */; };
+		000000000000000000000042 /* Core/EightClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000002 /* Core/EightClient.swift */; };
+		000000000000000000000043 /* Core/Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000003 /* Core/Keychain.swift */; };
+		000000000000000000000044 /* Core/Pod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000004 /* Core/Pod.swift */; };
+		000000000000000000000045 /* Core/Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000005 /* Core/Report.swift */; };
+		000000000000000000000046 /* Core/ReportCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000006 /* Core/ReportCache.swift */; };
+		000000000000000000000047 /* Core/ReportParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000007 /* Core/ReportParser.swift */; };
+		000000000000000000000048 /* Core/SleepScoreSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000008 /* Core/SleepScoreSnapshot.swift */; };
+		000000000000000000000049 /* Core/SleepService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000009 /* Core/SleepService.swift */; };
+		00000000000000000000004A /* Core/SleepSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000A /* Core/SleepSummary.swift */; };
+		00000000000000000000004B /* Core/Transport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000B /* Core/Transport.swift */; };
+		00000000000000000000004C /* App/MySleepApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000C /* App/MySleepApp.swift */; };
+		00000000000000000000004D /* App/PodStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000D /* App/PodStore.swift */; };
+		00000000000000000000004E /* App/PodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000E /* App/PodView.swift */; };
+		00000000000000000000004F /* App/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000F /* App/SettingsView.swift */; };
+		000000000000000000000050 /* App/SleepIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000010 /* App/SleepIntent.swift */; };
+		000000000000000000000051 /* App/SleepStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000011 /* App/SleepStore.swift */; };
+		000000000000000000000052 /* App/SleepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000012 /* App/SleepView.swift */; };
+		000000000000000000000055 /* Fixtures/demo.json in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000013 /* Fixtures/demo.json */; };
+		000000000000000000000056 /* App/MySleepAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000014 /* App/MySleepAssets.xcassets */; };
+		000000000000000000000058 /* MySleepWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 000000000000000000000021 /* MySleepWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		000000000000000000000060 /* UITests/AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000005F /* UITests/AppUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A270DEE7307FFC65000FECE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00000000000000000000006D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00000000000000000000003F;
+			remoteInfo = MySleepWatch;
+		};
+		A270DEE8307FFC65000FECE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00000000000000000000006D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 000000000000000000000020;
+			remoteInfo = MySleepComplication;
+		};
+		A270DEE9307FFC65000FECE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00000000000000000000006D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00000000000000000000005E;
+			remoteInfo = MySleep;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		00000000000000000000003A /* Embed Complication */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				000000000000000000000039 /* MySleepComplication.appex in Embed Complication */,
+			);
+			name = "Embed Complication";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000059 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				000000000000000000000058 /* MySleepWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		000000000000000000000001 /* Core/Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Configuration.swift; sourceTree = "<group>"; };
+		000000000000000000000002 /* Core/EightClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/EightClient.swift; sourceTree = "<group>"; };
+		000000000000000000000003 /* Core/Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Keychain.swift; sourceTree = "<group>"; };
+		000000000000000000000004 /* Core/Pod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Pod.swift; sourceTree = "<group>"; };
+		000000000000000000000005 /* Core/Report.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Report.swift; sourceTree = "<group>"; };
+		000000000000000000000006 /* Core/ReportCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/ReportCache.swift; sourceTree = "<group>"; };
+		000000000000000000000007 /* Core/ReportParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/ReportParser.swift; sourceTree = "<group>"; };
+		000000000000000000000008 /* Core/SleepScoreSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/SleepScoreSnapshot.swift; sourceTree = "<group>"; };
+		000000000000000000000009 /* Core/SleepService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/SleepService.swift; sourceTree = "<group>"; };
+		00000000000000000000000A /* Core/SleepSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/SleepSummary.swift; sourceTree = "<group>"; };
+		00000000000000000000000B /* Core/Transport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Transport.swift; sourceTree = "<group>"; };
+		00000000000000000000000C /* App/MySleepApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/MySleepApp.swift; sourceTree = "<group>"; };
+		00000000000000000000000D /* App/PodStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/PodStore.swift; sourceTree = "<group>"; };
+		00000000000000000000000E /* App/PodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/PodView.swift; sourceTree = "<group>"; };
+		00000000000000000000000F /* App/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/SettingsView.swift; sourceTree = "<group>"; };
+		000000000000000000000010 /* App/SleepIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/SleepIntent.swift; sourceTree = "<group>"; };
+		000000000000000000000011 /* App/SleepStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/SleepStore.swift; sourceTree = "<group>"; };
+		000000000000000000000012 /* App/SleepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/SleepView.swift; sourceTree = "<group>"; };
+		000000000000000000000013 /* Fixtures/demo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Fixtures/demo.json; sourceTree = "<group>"; };
+		000000000000000000000014 /* App/MySleepAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = App/MySleepAssets.xcassets; sourceTree = "<group>"; };
+		000000000000000000000015 /* Core/Report.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Report.swift; sourceTree = "<group>"; };
+		000000000000000000000016 /* Core/SleepScoreSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/SleepScoreSnapshot.swift; sourceTree = "<group>"; };
+		000000000000000000000017 /* Complication/SleepScoreComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complication/SleepScoreComplication.swift; sourceTree = "<group>"; };
+		00000000000000000000001C /* MySleepComplication.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MySleepComplication.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		000000000000000000000021 /* MySleepWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MySleepWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		000000000000000000000040 /* MySleep.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MySleep.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		00000000000000000000005F /* UITests/AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITests/AppUITests.swift; sourceTree = "<group>"; };
+		000000000000000000000062 /* MySleepUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MySleepUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		000000000000000000000035 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000054 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		000000000000000000000068 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00000000000000000000001C /* MySleepComplication.appex */,
+				000000000000000000000021 /* MySleepWatch.app */,
+				000000000000000000000040 /* MySleep.app */,
+				000000000000000000000062 /* MySleepUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		000000000000000000000069 = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000001 /* Core/Configuration.swift */,
+				000000000000000000000002 /* Core/EightClient.swift */,
+				000000000000000000000003 /* Core/Keychain.swift */,
+				000000000000000000000004 /* Core/Pod.swift */,
+				000000000000000000000005 /* Core/Report.swift */,
+				000000000000000000000006 /* Core/ReportCache.swift */,
+				000000000000000000000007 /* Core/ReportParser.swift */,
+				000000000000000000000008 /* Core/SleepScoreSnapshot.swift */,
+				000000000000000000000009 /* Core/SleepService.swift */,
+				00000000000000000000000A /* Core/SleepSummary.swift */,
+				00000000000000000000000B /* Core/Transport.swift */,
+				00000000000000000000000C /* App/MySleepApp.swift */,
+				00000000000000000000000D /* App/PodStore.swift */,
+				00000000000000000000000E /* App/PodView.swift */,
+				00000000000000000000000F /* App/SettingsView.swift */,
+				000000000000000000000010 /* App/SleepIntent.swift */,
+				000000000000000000000011 /* App/SleepStore.swift */,
+				000000000000000000000012 /* App/SleepView.swift */,
+				00000000000000000000005F /* UITests/AppUITests.swift */,
+				000000000000000000000015 /* Core/Report.swift */,
+				000000000000000000000016 /* Core/SleepScoreSnapshot.swift */,
+				000000000000000000000017 /* Complication/SleepScoreComplication.swift */,
+				000000000000000000000013 /* Fixtures/demo.json */,
+				000000000000000000000014 /* App/MySleepAssets.xcassets */,
+				000000000000000000000068 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		000000000000000000000020 /* MySleepComplication */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00000000000000000000001F /* Build configuration list for PBXNativeTarget "MySleepComplication" */;
+			buildPhases = (
+				00000000000000000000001B /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MySleepComplication;
+			productName = MySleepComplication;
+			productReference = 00000000000000000000001C /* MySleepComplication.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		00000000000000000000003F /* MySleepWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00000000000000000000003E /* Build configuration list for PBXNativeTarget "MySleepWatch" */;
+			buildPhases = (
+				000000000000000000000034 /* Sources */,
+				000000000000000000000035 /* Frameworks */,
+				000000000000000000000038 /* Resources */,
+				00000000000000000000003A /* Embed Complication */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				00000000000000000000003B /* PBXTargetDependency */,
+			);
+			name = MySleepWatch;
+			productName = MySleepWatch;
+			productReference = 000000000000000000000021 /* MySleepWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		00000000000000000000005E /* MySleep */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00000000000000000000005D /* Build configuration list for PBXNativeTarget "MySleep" */;
+			buildPhases = (
+				000000000000000000000053 /* Sources */,
+				000000000000000000000054 /* Frameworks */,
+				000000000000000000000057 /* Resources */,
+				000000000000000000000059 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				00000000000000000000005A /* PBXTargetDependency */,
+			);
+			name = MySleep;
+			productName = MySleep;
+			productReference = 000000000000000000000040 /* MySleep.app */;
+			productType = "com.apple.product-type.application";
+		};
+		000000000000000000000067 /* MySleepUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000065 /* Build configuration list for PBXNativeTarget "MySleepUITests" */;
+			buildPhases = (
+				000000000000000000000061 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				000000000000000000000066 /* PBXTargetDependency */,
+			);
+			name = MySleepUITests;
+			productName = MySleepUITests;
+			productReference = 000000000000000000000062 /* MySleepUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		00000000000000000000006D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2630;
+			};
+			buildConfigurationList = 00000000000000000000006C /* Build configuration list for PBXProject "MySleep" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 000000000000000000000069;
+			productRefGroup = 000000000000000000000068 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				000000000000000000000020 /* MySleepComplication */,
+				00000000000000000000003F /* MySleepWatch */,
+				00000000000000000000005E /* MySleep */,
+				000000000000000000000067 /* MySleepUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		000000000000000000000038 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000036 /* Fixtures/demo.json in Resources */,
+				000000000000000000000037 /* App/MySleepAssets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000057 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000055 /* Fixtures/demo.json in Resources */,
+				000000000000000000000056 /* App/MySleepAssets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		00000000000000000000001B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000018 /* Core/Report.swift in Sources */,
+				000000000000000000000019 /* Core/SleepScoreSnapshot.swift in Sources */,
+				00000000000000000000001A /* Complication/SleepScoreComplication.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000034 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000022 /* Core/Configuration.swift in Sources */,
+				000000000000000000000023 /* Core/EightClient.swift in Sources */,
+				000000000000000000000024 /* Core/Keychain.swift in Sources */,
+				000000000000000000000025 /* Core/Pod.swift in Sources */,
+				000000000000000000000026 /* Core/Report.swift in Sources */,
+				000000000000000000000027 /* Core/ReportCache.swift in Sources */,
+				000000000000000000000028 /* Core/ReportParser.swift in Sources */,
+				000000000000000000000029 /* Core/SleepScoreSnapshot.swift in Sources */,
+				00000000000000000000002A /* Core/SleepService.swift in Sources */,
+				00000000000000000000002B /* Core/SleepSummary.swift in Sources */,
+				00000000000000000000002C /* Core/Transport.swift in Sources */,
+				00000000000000000000002D /* App/MySleepApp.swift in Sources */,
+				00000000000000000000002E /* App/PodStore.swift in Sources */,
+				00000000000000000000002F /* App/PodView.swift in Sources */,
+				000000000000000000000030 /* App/SettingsView.swift in Sources */,
+				000000000000000000000031 /* App/SleepIntent.swift in Sources */,
+				000000000000000000000032 /* App/SleepStore.swift in Sources */,
+				000000000000000000000033 /* App/SleepView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000053 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000041 /* Core/Configuration.swift in Sources */,
+				000000000000000000000042 /* Core/EightClient.swift in Sources */,
+				000000000000000000000043 /* Core/Keychain.swift in Sources */,
+				000000000000000000000044 /* Core/Pod.swift in Sources */,
+				000000000000000000000045 /* Core/Report.swift in Sources */,
+				000000000000000000000046 /* Core/ReportCache.swift in Sources */,
+				000000000000000000000047 /* Core/ReportParser.swift in Sources */,
+				000000000000000000000048 /* Core/SleepScoreSnapshot.swift in Sources */,
+				000000000000000000000049 /* Core/SleepService.swift in Sources */,
+				00000000000000000000004A /* Core/SleepSummary.swift in Sources */,
+				00000000000000000000004B /* Core/Transport.swift in Sources */,
+				00000000000000000000004C /* App/MySleepApp.swift in Sources */,
+				00000000000000000000004D /* App/PodStore.swift in Sources */,
+				00000000000000000000004E /* App/PodView.swift in Sources */,
+				00000000000000000000004F /* App/SettingsView.swift in Sources */,
+				000000000000000000000050 /* App/SleepIntent.swift in Sources */,
+				000000000000000000000051 /* App/SleepStore.swift in Sources */,
+				000000000000000000000052 /* App/SleepView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000061 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000060 /* UITests/AppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		00000000000000000000003B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 000000000000000000000020 /* MySleepComplication */;
+			targetProxy = A270DEE8307FFC65000FECE7 /* PBXContainerItemProxy */;
+		};
+		00000000000000000000005A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00000000000000000000003F /* MySleepWatch */;
+			targetProxy = A270DEE7307FFC65000FECE7 /* PBXContainerItemProxy */;
+		};
+		000000000000000000000066 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00000000000000000000005E /* MySleep */;
+			targetProxy = A270DEE9307FFC65000FECE7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		00000000000000000000001D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Complication/Watch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F3A2ATFUQE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Complication/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Sleep Score";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(SLEEP_BUNDLE_IDENTIFIER).watchkitapp.sleepscore-f3a2atfuqe";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		00000000000000000000001E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Complication/Watch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F3A2ATFUQE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Complication/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Sleep Score";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(SLEEP_BUNDLE_IDENTIFIER).watchkitapp.sleepscore-f3a2atfuqe";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		00000000000000000000003C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = MySleepWatchIcon;
+				CODE_SIGN_ENTITLEMENTS = Complication/Watch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F3A2ATFUQE;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Complication/WatchInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MySleep;
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.meetshu.mysleep;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meetshu.mysleep.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		00000000000000000000003D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = MySleepWatchIcon;
+				CODE_SIGN_ENTITLEMENTS = Complication/Watch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F3A2ATFUQE;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Complication/WatchInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MySleep;
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.meetshu.mysleep;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meetshu.mysleep.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		00000000000000000000005B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = MySleepIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F3A2ATFUQE;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MySleep;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meetshu.mysleep;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		00000000000000000000005C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = MySleepIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F3A2ATFUQE;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MySleep;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meetshu.mysleep;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		000000000000000000000063 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(SLEEP_BUNDLE_IDENTIFIER).uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MySleep;
+			};
+			name = Debug;
+		};
+		000000000000000000000064 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(SLEEP_BUNDLE_IDENTIFIER).uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MySleep;
+			};
+			name = Release;
+		};
+		00000000000000000000006A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				SLEEP_APP_NAME = MySleep;
+				SLEEP_BUNDLE_IDENTIFIER = com.meetshu.mysleep;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		00000000000000000000006B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				SLEEP_APP_NAME = MySleep;
+				SLEEP_BUNDLE_IDENTIFIER = com.meetshu.mysleep;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00000000000000000000001F /* Build configuration list for PBXNativeTarget "MySleepComplication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000001D /* Debug */,
+				00000000000000000000001E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		00000000000000000000003E /* Build configuration list for PBXNativeTarget "MySleepWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000003C /* Debug */,
+				00000000000000000000003D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		00000000000000000000005D /* Build configuration list for PBXNativeTarget "MySleep" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000005B /* Debug */,
+				00000000000000000000005C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000065 /* Build configuration list for PBXNativeTarget "MySleepUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000063 /* Debug */,
+				000000000000000000000064 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		00000000000000000000006C /* Build configuration list for PBXProject "MySleep" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000006A /* Debug */,
+				00000000000000000000006B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 00000000000000000000006D /* Project object */;
+}

@@ -1,0 +1,43 @@
+{
+  "days": [
+    {
+      "day": "2026-10-14",
+      "presenceStart": "2026-10-14T05:30:00Z",
+      "presenceEnd": "2026-10-14T13:30:00Z",
+      "score": 88,
+      "sleepDurationSeconds": 27000,
+      "stages": [
+        {
+          "stage": "deep",
+          "duration": 5400
+        },
+        {
+          "stage": "rem",
+          "duration": 5400
+        },
+        {
+          "stage": "light",
+          "duration": 16200
+        },
+        {
+          "stage": "awake",
+          "duration": 1800
+        }
+      ],
+      "heartRate": 56,
+      "respiratoryRate": 14.2,
+      "hrv": 42,
+      "snoringDurationSeconds": 120,
+      "sleepQualityScore": {
+        "hrv": {
+          "score": 80
+        }
+      },
+      "performanceWindows": [
+        {
+          "ignored": true
+        }
+      ]
+    }
+  ]
+}
