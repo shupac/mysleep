@@ -15,6 +15,14 @@ final class PodTests: XCTestCase {
         XCTAssertEqual(requests[0].httpMethod, "GET")
         XCTAssertEqual(requests[0].value(forHTTPHeaderField: "Authorization"), "Bearer cached")
     }
+    func testPhaseQualifiedStatusDecodesAsActiveBed() async throws {
+        let transport = MockTransport([response("{\"currentLevel\":-13,\"currentState\":{\"type\":\"smart:bedtime\"}}")])
+        let status = try await client(transport).podStatus(credentials: credentials(), cachedToken: cached) { _ in }
+        XCTAssertTrue(status.isOn)
+        XCTAssertFalse(status.isOff)
+        XCTAssertEqual(status.currentState.type, "smart:bedtime")
+        XCTAssertEqual(PodControlState(status: status, checkedAt: testNow, activity: .idle, now: testNow), .on)
+    }
     func testTemperatureEnablesSmartThenWritesLevelAndAcceptsEmpty204() async throws {
         let transport = MockTransport([response("", status: 204), response("", status: 204)])
         try await client(transport).control(.temperature(-40), credentials: credentials(), cachedToken: cached) { _ in }
@@ -26,8 +34,8 @@ final class PodTests: XCTestCase {
         XCTAssertEqual(first, ["currentState": ["type": "smart"]])
         XCTAssertEqual(second, ["currentLevel": -40])
     }
-    func testTurnOnSetsPowerForCurrentUser() async throws {
-        for (action, state) in [(PodAction.turnOn, "smart")] {
+    func testPowerCommandsSetPowerForCurrentUser() async throws {
+        for (action, state) in [(PodAction.turnOn, "smart"), (.turnOff, "off")] {
             let transport = MockTransport([response("", status: 204)])
             try await client(transport).control(action, credentials: credentials(), cachedToken: cached) { _ in }
             let requests = await transport.recorded()
@@ -37,8 +45,9 @@ final class PodTests: XCTestCase {
             XCTAssertEqual(body, ["currentState": ["type": state]])
         }
     }
-    func testEndSleepStopsNewestRecentIncompleteInterval() async throws {
+    func testEndSleepPowersOffThenStopsNewestRecentIncompleteInterval() async throws {
         let transport = MockTransport([
+            response("", status: 204),
             response("""
             {"intervals":[
               {"id":"complete","ts":"2026-10-14T13:59:00Z"},
@@ -48,11 +57,15 @@ final class PodTests: XCTestCase {
             """), response("", status: 204)])
         try await client(transport).control(.endSleep, credentials: credentials(), cachedToken: cached) { _ in }
         let requests = await transport.recorded()
-        XCTAssertEqual(requests.count, 2)
-        XCTAssertEqual(requests[0].url?.absoluteString, "https://client-api.8slp.net/v1/users/uid/intervals")
-        XCTAssertEqual(requests[1].url?.path, "/v1/users/uid/intervals/active")
-        XCTAssertEqual(requests[1].httpMethod, "PUT")
-        let body = try JSONSerialization.jsonObject(with: requests[1].httpBody!) as! [String: String]
+        XCTAssertEqual(requests.count, 3)
+        XCTAssertEqual(requests[0].url?.absoluteString, "https://app-api.8slp.net/v1/users/uid/temperature")
+        XCTAssertEqual(requests[0].httpMethod, "PUT")
+        let power = try JSONSerialization.jsonObject(with: requests[0].httpBody!) as! [String: [String: String]]
+        XCTAssertEqual(power, ["currentState": ["type": "off"]])
+        XCTAssertEqual(requests[1].url?.absoluteString, "https://client-api.8slp.net/v1/users/uid/intervals")
+        XCTAssertEqual(requests[2].url?.path, "/v1/users/uid/intervals/active")
+        XCTAssertEqual(requests[2].httpMethod, "PUT")
+        let body = try JSONSerialization.jsonObject(with: requests[2].httpBody!) as! [String: String]
         XCTAssertEqual(body, ["edit": "stop"])
     }
     func testEndSleepDoesNotEditCompletedStaleOrFutureIntervals() async throws {
@@ -61,22 +74,23 @@ final class PodTests: XCTestCase {
             "{\"id\":\"old\",\"ts\":\"2026-10-10T06:00:00Z\",\"incomplete\":true}",
             "{\"id\":\"future\",\"ts\":\"2026-10-15T06:00:00Z\",\"incomplete\":true}"
         ] {
-            let transport = MockTransport([response("{\"intervals\":[\(item)]}")])
-            do { try await client(transport).control(.endSleep, credentials: credentials(), cachedToken: cached) { _ in }; XCTFail() }
-            catch { XCTAssertEqual(error as? SleepError, .noActiveSleep) }
-            let count = await transport.recorded().count; XCTAssertEqual(count, 1)
+            let transport = MockTransport([response("", status: 204), response("{\"intervals\":[\(item)]}")])
+            try await client(transport).control(.endSleep, credentials: credentials(), cachedToken: cached) { _ in }
+            let requests = await transport.recorded(); XCTAssertEqual(requests.count, 2)
+            XCTAssertEqual(requests.last?.httpMethod, "GET")
         }
     }
     func testEndSleepWriteIsNotReplayedOnServerFailure() async throws {
-        let transport = MockTransport([response("{\"intervals\":[{\"id\":\"active\",\"ts\":\"2026-10-14T06:00:00Z\",\"incomplete\":true}]}"), response("", status: 503)])
+        let transport = MockTransport([response("", status: 204), response("{\"intervals\":[{\"id\":\"active\",\"ts\":\"2026-10-14T06:00:00Z\",\"incomplete\":true}]}"), response("", status: 503)])
         do { try await client(transport).control(.endSleep, credentials: credentials(), cachedToken: cached) { _ in }; XCTFail() }
-        catch { XCTAssertEqual(error as? SleepError, .controlUnconfirmed) }
-        let count = await transport.recorded().count; XCTAssertEqual(count, 2)
+        catch { XCTAssertEqual(error as? SleepError, .bedOffSleepUnconfirmed) }
+        let count = await transport.recorded().count; XCTAssertEqual(count, 3)
     }
     func testEndSleepBypassesFreshReportCacheAndReadsConsistently() async throws {
         let secure = MemorySession(); secure.saved = SavedSession(credentials: try credentials(), token: cached)
         let transport = MockTransport([
             HTTPResult(data: try fixture(), status: 200),
+            response("", status: 204),
             response("{\"intervals\":[{\"id\":\"active\",\"ts\":\"2026-10-14T06:00:00Z\",\"incomplete\":true}]}"),
             response("", status: 204), HTTPResult(data: try fixture(), status: 200)])
         let service = SleepService(secure: secure, cache: MemoryReports(), client: client(transport), now: { testNow })
@@ -84,9 +98,30 @@ final class PodTests: XCTestCase {
         try await service.control(.endSleep)
         _ = try await service.latest()
         let requests = await transport.recorded()
-        XCTAssertEqual(requests.count, 4)
-        let query = URLComponents(url: requests[3].url!, resolvingAgainstBaseURL: false)?.queryItems
+        XCTAssertEqual(requests.count, 5)
+        let query = URLComponents(url: requests[4].url!, resolvingAgainstBaseURL: false)?.queryItems
         XCTAssertEqual(query?.first { $0.name == "consistent-read" }?.value, "true")
+    }
+    func testEndSleepDoesNotContinueAfterUnconfirmedPowerOff() async throws {
+        for status in [429, 503] {
+            let transport = MockTransport([response("", status: status)])
+            do { try await client(transport).control(.endSleep, credentials: credentials(), cachedToken: cached) { _ in }; XCTFail() }
+            catch { XCTAssertEqual(error as? SleepError, status == 429 ? .rateLimited : .controlUnconfirmed) }
+            let count = await transport.recorded().count; XCTAssertEqual(count, 1)
+        }
+    }
+    func testEndSleepReportsBedOffWhenIntervalLookupFails() async throws {
+        let transport = MockTransport([response("", status: 204), response("{}")])
+        do { try await client(transport).control(.endSleep, credentials: credentials(), cachedToken: cached) { _ in }; XCTFail() }
+        catch { XCTAssertEqual(error as? SleepError, .bedOffSleepUnconfirmed) }
+        let count = await transport.recorded().count; XCTAssertEqual(count, 2)
+    }
+    func testEndSleepWhenNoActiveSessionStillPowersOff() async throws {
+        let transport = MockTransport([response("", status: 204), response("{\"intervals\":[]}")])
+        try await client(transport).control(.endSleep, credentials: credentials(), cachedToken: cached) { _ in }
+        let requests = await transport.recorded(); XCTAssertEqual(requests.count, 2)
+        XCTAssertEqual(requests.first?.httpMethod, "PUT")
+        XCTAssertEqual(requests.last?.httpMethod, "GET")
     }
     func testInvalidLevelDoesNotAuthenticateOrSendAnyRequest() async throws {
         let transport = MockTransport([])
@@ -169,5 +204,78 @@ final class PodTests: XCTestCase {
         let requests = await transport.recorded()
         XCTAssertEqual(requests.count, 3)
         XCTAssertEqual(requests.filter { $0.httpMethod == "POST" }.count, 1)
+    }
+}
+
+final class PodControlStateTests: XCTestCase {
+    private let off = PodStatus(currentLevel: -20, currentState: .init(type: "off"))
+    private let on = PodStatus(currentLevel: -20, currentState: .init(type: "smart"))
+    private let actions: [PodAction] = [.turnOn, .temperature(-40), .endSleep, .turnOff]
+
+    private func state(_ status: PodStatus?, age: TimeInterval = 0,
+                       activity: PodControlActivity = .idle) -> PodControlState {
+        PodControlState(status: status, checkedAt: testNow.addingTimeInterval(-age), activity: activity, now: testNow)
+    }
+    func testOffOffersNoCommands() {
+        let value = state(off)
+        XCTAssertEqual(value, .off)
+        XCTAssertTrue(actions.filter(value.allows).isEmpty)
+    }
+    func testOnAllowsTemperatureAndEndSleepButNotTurnOnOrSeparateOff() {
+        let value = state(on)
+        XCTAssertEqual(value, .on)
+        XCTAssertEqual(actions.filter(value.allows), [.temperature(-40), .endSleep])
+    }
+    func testExpiredOrMissingStatusNeverAllowsCommands() {
+        for value in [state(on, age: 60), state(off, age: 61), state(nil),
+                      PodControlState(status: on, checkedAt: nil, activity: .idle, now: testNow)] {
+            XCTAssertTrue(actions.filter(value.allows).isEmpty)
+        }
+        XCTAssertEqual(state(on, age: 59.9), .on)
+        XCTAssertEqual(state(off, age: 60), .refreshRequired)
+        XCTAssertEqual(state(nil), .unavailable)
+    }
+    func testInFlightAndUnconfirmedCommandsHideOldStateActions() {
+        for status in [on, off] {
+            for activity in [PodControlActivity.refreshing, .sending(.endSleep), .confirming(.turnOn)] {
+                XCTAssertTrue(actions.filter(state(status, activity: activity).allows).isEmpty)
+            }
+        }
+        XCTAssertEqual(state(off, activity: .refreshing), .loading)
+        XCTAssertEqual(state(on, activity: .sending(.endSleep)), .changing(.endSleep))
+        XCTAssertEqual(state(off, activity: .confirming(.turnOn)), .confirming(.turnOn))
+    }
+    func testUnknownModesNeverImplyOnOrAllowControls() {
+        let value = state(PodStatus(currentLevel: 0, currentState: .init(type: "future-mode")))
+        XCTAssertEqual(value, .unsupported("future-mode"))
+        XCTAssertTrue(actions.filter(value.allows).isEmpty)
+    }
+    func testSmartPhaseModesAllowActiveControlsAndConfirmSetpoint() {
+        // bedtime is observed live; other suffixes exercise the smart: family rule.
+        for mode in ["smart:bedtime", "smart:initialsleep", "smart:finalsleep", "smart:future-phase"] {
+            let phased = PodStatus(currentLevel: -20, currentState: .init(type: mode))
+            let value = state(phased)
+            XCTAssertTrue(phased.isOn)
+            XCTAssertEqual(value, .on)
+            XCTAssertEqual(actions.filter(value.allows), [.temperature(-40), .endSleep])
+            XCTAssertTrue(PodAction.turnOn.isConfirmed(by: phased))
+            XCTAssertTrue(PodAction.temperature(-20).isConfirmed(by: phased))
+            XCTAssertFalse(PodAction.temperature(-40).isConfirmed(by: phased))
+            XCTAssertFalse(PodAction.endSleep.isConfirmed(by: phased))
+        }
+        for mode in ["smart:", "smarter", "off:future", "unknown"] {
+            let value = state(PodStatus(currentLevel: 0, currentState: .init(type: mode)))
+            XCTAssertEqual(value, .unsupported(mode))
+            XCTAssertTrue(actions.filter(value.allows).isEmpty)
+        }
+    }
+    func testReadbackMustMatchCommandBeforeRestoringActions() {
+        XCTAssertTrue(PodAction.turnOn.isConfirmed(by: on))
+        XCTAssertFalse(PodAction.turnOn.isConfirmed(by: off))
+        XCTAssertTrue(PodAction.endSleep.isConfirmed(by: off))
+        XCTAssertFalse(PodAction.endSleep.isConfirmed(by: on))
+        XCTAssertTrue(PodAction.temperature(-20).isConfirmed(by: on))
+        XCTAssertFalse(PodAction.temperature(-40).isConfirmed(by: on))
+        XCTAssertFalse(PodAction.temperature(-20).isConfirmed(by: off))
     }
 }

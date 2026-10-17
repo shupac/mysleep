@@ -34,6 +34,11 @@ struct SettingsView: View {
                         saving = false
                     }
                 }.disabled(saving || password.isEmpty)
+                Section("Siri") {
+                    Text("Say “Hey Siri, done sleeping with MySleep” to turn off heating/cooling and end tracking.")
+                    Text("For “Hey Siri, end sleep”: on your iPhone, create a shortcut named End sleep with the MySleep → End Sleep action. In its details, enable Show on Apple Watch.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
                 if store.isConfigured {
                     Section {
                         Button("Sign out on this device", role: .destructive) { confirmSignOut = true }

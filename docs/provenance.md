@@ -90,10 +90,10 @@ has `incomplete: true`. Flow 198 sends
 `PUT /v1/users/{userId}/intervals/{intervalId}` with `{"edit":"stop"}` (HTTP 200).
 Flow 199 reads Trends v3 with `consistent-read=true`; flow 202 rereads intervals,
 where the stopped interval no longer has `incomplete` and has `edit: stop`.
-No temperature-off write appears in this sequence, so End sleep only stops the
-interval. Selection uses the newest incomplete interval on the first page,
-restricted to starts within 36 hours to avoid editing old records. No active
-candidate produces an explicit error. Writes retain the existing no-transient-
+No temperature-off write appears in this captured sequence. The initial End sleep
+implementation only stopped the interval; the October 17 update below adds power-off. Selection uses the newest incomplete interval on the first page,
+restricted to starts within 36 hours to avoid editing old records. The initial implementation reported an error when no active candidate existed;
+the October 17 update allows bed-off to succeed in that case. Writes retain the existing no-transient-
 retry policy. The next report bypasses the local freshness cache. Synthetic
 fixtures test the contract; no live provider writes were made during development.
 
@@ -107,3 +107,71 @@ including the official app's temperature/pod power writes. The
 archives locally and exclude them from Git because they contain tokens and
 personal account, device, and sleep data. The earlier eightctl-only notes now
 live in [eightctl-api-notes.md](eightctl-api-notes.md).
+
+
+## Combined End sleep action — 2026-10-17
+
+At the user's request, the Watch/iPhone button and EndSleepIntent now first send
+the existing profile-scoped temperature-off command, then stop the newest recent
+incomplete interval. These are separate requests, not an atomic provider API.
+A rejected/unconfirmed power-off stops the operation; if power-off is accepted
+but interval discovery or stopping fails, a dedicated partial-result error says
+so. An absent active interval still permits successful power-off. No writes are
+replayed after ambiguous network/server failures. This combines the existing
+eightctl-derived power contract with the captured interval-stop contract; it is
+not a newly observed single official-app operation.
+
+The End Sleep App Intent exposes the same operation on both platforms. App
+Shortcut phrases use the application-name placeholder as required by Apple's
+[App Intents guidance](https://developer.apple.com/videos/play/wwdc2025/244/).
+The app refreshes App Shortcut registration at startup. For the exact phrase
+“Hey Siri, end sleep”, create a personal shortcut named End sleep using the
+MySleep End Sleep action and enable Show on Apple Watch. Apple's
+[Siri shortcut instructions](https://support.apple.com/guide/shortcuts/apd07c25bb38/ios)
+explain invocation by personal shortcut name. Settings now includes this setup.
+
+
+The primary built-in phrase is now **“End with MySleep”**, added October 17 after
+Siri routed the shorter sleep phrase to an unrelated room command. The earlier
+app-qualified phrases remain aliases. Physical voice recognition still requires
+a device check.
+
+
+## Live active-mode correction — 2026-10-17
+
+Read-only authenticated status checks on all three documented temperature reads
+returned `smart:bedtime`. Native UI previously accepted only exact `smart`; it
+therefore hid controls as an unsupported mode despite the bed being on. The
+shared `PodStatus.isOn` now recognizes bare `smart` and nonempty `smart:` phase
+variants. Screen selection, temperature readback confirmation, and resetting the
+completed-sleep override all use that predicate. Unknown families still expose
+no controls, with an explicit unavailable-status label on the report fallback.
+The recorded session was used for authentication; no tokens, profile IDs or
+personal readings were written to documentation or printed. No bed-control
+request was issued during diagnosis.
+
+
+The current primary built-in phrase is **“Done sleeping with MySleep”**. The
+shortcut tile is labeled Done sleeping; the stable EndSleepIntent identifier and
+End Sleep action remain compatible with existing personal shortcuts. Earlier
+app-qualified phrases remain aliases. No personal shortcut is required for this
+app-qualified phrase.
+
+
+## Locked-phone HomePod End Sleep — 2026-10-17
+
+EndSleepIntent now uses `alwaysAllowed`, permitting the action to run on the
+locked phone selected by HomePod Personal Requests. GetLatestSleepIntent retains
+`requiresLocalDeviceAuthentication`. The existing saved session migrates in place
+on its next successful unlocked load to
+`kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`, with synchronization disabled.
+All new session/token saves use that same protection class. An already-migrated
+load performs no attribute write, allowing later locked reads. Migration errors
+surface without deleting/replacing saved bytes. Before the first unlock after
+reboot, the OS still denies access. Report file protection is unchanged.
+
+Apple references: [alwaysAllowed](https://developer.apple.com/documentation/appintents/intentauthenticationpolicy/alwaysallowed),
+[device-only background Keychain access](https://developer.apple.com/documentation/security/ksecattraccessibleafterfirstunlockthisdeviceonly),
+[Personal Requests](https://support.apple.com/en-us/108397). The app change is not
+a guarantee that HomePod's separate voice recognition/authentication settings are
+configured.

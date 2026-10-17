@@ -30,13 +30,13 @@ final class SleepStore: ObservableObject {
         demo = false
         #endif
     }
-    func start() async {
+    func start(loadReport: Bool = true) async {
         guard !demo else { return }
         do {
             if let config = try await service.configuration() {
                 isConfigured = true; email = config.email; timezone = config.timezone
                 if report == nil { report = try await service.cached() }
-                await refresh()
+                if loadReport { await refresh() }
             } else { isConfigured = false }
         } catch { self.error = error.localizedDescription }
     }

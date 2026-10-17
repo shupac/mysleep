@@ -2,51 +2,110 @@ import SwiftUI
 
 struct SleepView: View {
     @EnvironmentObject private var store: SleepStore
+    @EnvironmentObject private var pod: PodStore
     @Environment(\.scenePhase) private var scenePhase
     @State private var showSettings = false
+    @State private var checkingBed = true
+    @State private var endingSleep = false
     private let accent = Color(red: 0.52, green: 0.76, blue: 1)
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 14) {
-                    if store.isConfigured {
-                        NavigationLink { PodView() } label: { Label("Pod controls", systemImage: "thermometer.medium") }
-                            .accessibilityIdentifier("podControls")
-                    }
-                    if let envelope = store.report {
-                        reportView(envelope)
-                    } else if store.isLoading {
-                        ProgressView("Getting your sleep…").padding(.vertical, 30)
+                    if checkingBed {
+                        ProgressView("Checking…")
+                    } else if endingSleep {
+                        ProgressView(store.isLoading ? "Getting your sleep…" : "Ending sleep…")
+                    } else if store.isConfigured {
+                        TimelineView(.periodic(from: .now, by: 5)) { context in
+                            let state = pod.state(at: context.date)
+                            if showsReport(state) {
+                                switch state {
+                                case .unavailable, .unsupported:
+                                    Text("Bed status unavailable").font(.caption2).foregroundStyle(.secondary)
+                                default: EmptyView()
+                                }
+                                reportContent
+                            } else {
+                                PodView(state: state) {
+                                    endingSleep = true
+                                    defer { endingSleep = false }
+                                    if await pod.send(.endSleep) { await store.refresh(force: true) }
+                                }
+                            }
+                        }
                     } else {
                         Image(systemName: "moon.zzz.fill").font(.largeTitle).foregroundStyle(accent)
-                        Text(store.isConfigured ? "No report yet" : "Your sleep, at a glance")
-                            .font(.headline).multilineTextAlignment(.center)
-                        Text(store.isConfigured ? "Refresh after your sleep has finished." : "Sign in to Eight Sleep in Settings.")
+                        Text("Your sleep, at a glance").font(.headline)
+                        Text("Sign in to Eight Sleep in Settings.")
                             .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
                     }
-                    if let error = store.error {
+                    if let error = pod.error, store.isConfigured {
                         Text(error).font(.caption2).foregroundStyle(.orange).multilineTextAlignment(.center)
                     }
+                    #if os(watchOS)
                     if store.isConfigured {
-                        Button { Task { await store.refresh(force: true) } } label: {
-                            Label(store.isLoading ? "Refreshing…" : "Refresh", systemImage: "arrow.clockwise")
-                        }.disabled(store.isLoading)
+                        Button("Refresh", systemImage: "arrow.clockwise") { Task { await refresh(force: true) } }
+                            .disabled(store.isLoading || pod.isWorking || endingSleep)
                     }
-                    Button("Settings", systemImage: "gearshape") { showSettings = true }.disabled(store.isLoading)
+                    #endif
+                    Button("Settings", systemImage: "gearshape") { showSettings = true }.disabled(store.isLoading || pod.isWorking || endingSleep)
                         .font(.caption)
                 }.padding(.horizontal, 8).padding(.bottom)
                 .frame(maxWidth: 430).frame(maxWidth: .infinity)
             }
             .navigationTitle("MySleep")
-            .refreshable { await store.refresh(force: true) }
-            .task { await store.start() }
+            #if os(iOS)
+            .scrollBounceBehavior(.always, axes: .vertical)
+            .refreshable { await refresh(force: true) }
+            #endif
+            .task { await start() }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { Task { await store.start() } }
+                if phase == .active { Task { await start() } }
             }
-            .sheet(isPresented: $showSettings, onDismiss: { Task { await store.refresh() } }) {
+            .sheet(isPresented: $showSettings, onDismiss: { Task { await refresh() } }) {
                 SettingsView().environmentObject(store)
             }
+        }
+    }
+    private func start() async {
+        guard !endingSleep, !pod.isWorking else { return }
+        checkingBed = true
+        defer { checkingBed = false }
+        await store.start(loadReport: false)
+        if store.isConfigured {
+            await pod.refresh()
+            checkingBed = false
+            if showsReport(pod.state()) { await store.refresh() }
+        } else { pod.clear() }
+    }
+    private func refresh(force: Bool = false) async {
+        guard !endingSleep, !pod.isWorking, !store.isLoading else { return }
+        if store.isConfigured {
+            await pod.refresh()
+            if showsReport(pod.state()) { await store.refresh(force: force) }
+        } else { pod.clear() }
+    }
+    private func showsReport(_ state: PodControlState) -> Bool {
+        if pod.didEndSleep { return true }
+        switch state {
+        case .off, .unavailable, .unsupported: return true
+        case .refreshRequired: return pod.status?.isOff == true
+        default: return false
+        }
+    }
+    @ViewBuilder
+    private var reportContent: some View {
+        if store.isLoading {
+            ProgressView("Getting your sleep…").padding(.vertical, 30)
+        } else if let envelope = store.report {
+            reportView(envelope)
+        } else {
+            Text("No report yet").font(.headline)
+        }
+        if let error = store.error {
+            Text(error).font(.caption2).foregroundStyle(.orange).multilineTextAlignment(.center)
         }
     }
     @ViewBuilder

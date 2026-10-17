@@ -5,6 +5,10 @@ struct PodStatus: Decodable, Equatable {
     let currentLevel: Int
     let currentState: State
     var isOff: Bool { currentState.type == "off" }
+    // Active schedules report phase-qualified modes, e.g. smart:bedtime.
+    var isOn: Bool {
+        currentState.type == "smart" || (currentState.type.hasPrefix("smart:") && currentState.type.count > 6)
+    }
 }
 enum PodAction: Equatable {
     case temperature(Int)
@@ -42,5 +46,49 @@ enum PodTemperature {
         return lookup.min {
             (abs($0.level - level), $0.level) < (abs($1.level - level), $1.level)
         }?.fahrenheit
+    }
+}
+
+/// Shared screen policy: power, freshness, and command progress decide all controls.
+enum PodControlActivity: Equatable {
+    case idle, refreshing
+    case sending(PodAction)
+    case confirming(PodAction)
+}
+
+enum PodControlState: Equatable {
+    case loading, off, on, refreshRequired, unavailable
+    case changing(PodAction), confirming(PodAction)
+    case unsupported(String)
+
+    init(status: PodStatus?, checkedAt: Date?, activity: PodControlActivity, now: Date) {
+        switch activity {
+        case .refreshing: self = .loading; return
+        case .sending(let action): self = .changing(action); return
+        case .confirming(let action): self = .confirming(action); return
+        case .idle: break
+        }
+        guard let status, let checkedAt else { self = .unavailable; return }
+        guard now.timeIntervalSince(checkedAt) < 60 else { self = .refreshRequired; return }
+        if status.isOff { self = .off }
+        else if status.isOn { self = .on }
+        else { self = .unsupported(status.currentState.type) }
+    }
+
+    func allows(_ action: PodAction) -> Bool {
+        switch (self, action) {
+        case (.on, .temperature), (.on, .endSleep): true
+        default: false
+        }
+    }
+}
+
+extension PodAction {
+    func isConfirmed(by status: PodStatus) -> Bool {
+        switch self {
+        case .turnOff, .endSleep: status.isOff
+        case .turnOn: status.isOn
+        case .temperature(let level): status.isOn && status.currentLevel == level
+        }
     }
 }

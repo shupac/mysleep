@@ -75,33 +75,42 @@ struct EightClient {
             } catch is CancellationError { throw CancellationError() }
             catch { throw SleepError.partialTemperatureChange }
         case .endSleep:
-            // Official app capture (2026-10-16): stop the incomplete interval,
-            // rather than treating temperature power as sleep tracking state.
-            var parts = URLComponents(url: url.deletingLastPathComponent().appendingPathComponent("intervals"), resolvingAgainstBaseURL: false)!
-            parts.host = "client-api.8slp.net"
-            let clientURL = parts.url!
-            let data = try await request(url: clientURL, credentials: credentials, token: &token, saveToken: saveToken)
-            struct Intervals: Decodable {
-                struct Interval: Decodable { let id: String; let ts: String; let incomplete: Bool? }
-                let intervals: [Interval]
-            }
-            guard let result = try? JSONDecoder().decode(Intervals.self, from: data) else { throw SleepError.invalidResponse }
-            let formatter = ISO8601DateFormatter(); formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            let plain = ISO8601DateFormatter()
-            let candidates = result.intervals.compactMap { interval -> (String, Date)? in
-                guard interval.incomplete == true,
-                      let start = formatter.date(from: interval.ts) ?? plain.date(from: interval.ts),
-                      start <= now(), now().timeIntervalSince(start) < 36 * 3600 else { return nil }
-                return (interval.id, start)
-            }
-            guard let interval = candidates.max(by: { $0.1 < $1.1 }) else { throw SleepError.noActiveSleep }
-            _ = try await request(url: clientURL.appendingPathComponent(interval.0), method: "PUT",
-                                  body: JSONSerialization.data(withJSONObject: ["edit": "stop"]), retryTransient: false,
+            // Power off first so a missing or unavailable report cannot leave the bed on.
+            _ = try await request(url: url, method: "PUT", body: state("off"), retryTransient: false,
                                   credentials: credentials, token: &token, saveToken: saveToken)
+            do {
+                try await stopActiveSleep(url: url, credentials: credentials, token: &token, saveToken: saveToken)
+            } catch is CancellationError { throw CancellationError() }
+            catch { throw SleepError.bedOffSleepUnconfirmed }
         case .turnOn, .turnOff:
             _ = try await request(url: url, method: "PUT", body: state(action == .turnOn ? "smart" : "off"), retryTransient: false,
                                   credentials: credentials, token: &token, saveToken: saveToken)
         }
+    }
+    private func stopActiveSleep(url: URL, credentials: Credentials, token: inout AccessToken,
+                                 saveToken: @escaping (AccessToken?) async throws -> Void) async throws {
+        // Official app capture (2026-10-16): finalize the newest recent incomplete interval.
+        var parts = URLComponents(url: url.deletingLastPathComponent().appendingPathComponent("intervals"), resolvingAgainstBaseURL: false)!
+        parts.host = "client-api.8slp.net"
+        let clientURL = parts.url!
+        let data = try await request(url: clientURL, credentials: credentials, token: &token, saveToken: saveToken)
+        struct Intervals: Decodable {
+            struct Interval: Decodable { let id: String; let ts: String; let incomplete: Bool? }
+            let intervals: [Interval]
+        }
+        guard let result = try? JSONDecoder().decode(Intervals.self, from: data) else { throw SleepError.invalidResponse }
+        let formatter = ISO8601DateFormatter(); formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let plain = ISO8601DateFormatter()
+        let candidates = result.intervals.compactMap { interval -> (String, Date)? in
+            guard interval.incomplete == true,
+                  let start = formatter.date(from: interval.ts) ?? plain.date(from: interval.ts),
+                  start <= now(), now().timeIntervalSince(start) < 36 * 3600 else { return nil }
+            return (interval.id, start)
+        }
+        guard let interval = candidates.max(by: { $0.1 < $1.1 }) else { return }
+        _ = try await request(url: clientURL.appendingPathComponent(interval.0), method: "PUT",
+                              body: JSONSerialization.data(withJSONObject: ["edit": "stop"]), retryTransient: false,
+                              credentials: credentials, token: &token, saveToken: saveToken)
     }
     private func podURL(_ token: AccessToken) throws -> URL {
         var allowed = CharacterSet.urlPathAllowed; allowed.remove(charactersIn: "/?#%")

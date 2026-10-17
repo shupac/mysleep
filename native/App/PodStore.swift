@@ -4,35 +4,49 @@ import SwiftUI
 final class PodStore: ObservableObject {
     @Published private(set) var status: PodStatus?
     @Published private(set) var checkedAt: Date?
-    @Published private(set) var isWorking = false
+    @Published private(set) var activity: PodControlActivity = .idle
     @Published private(set) var error: String?
     @Published private(set) var message: String?
+    @Published private(set) var didEndSleep = false
     @Published var selectedFahrenheit: Double = 80
+    private var pendingConfirmation: PodAction?
     private let service: SleepService
     private let demo: Bool
+    private let demoOff: Bool
 
     init(service: SleepService = .shared) {
         self.service = service
         #if DEBUG
         demo = ProcessInfo.processInfo.arguments.contains("--demo")
+        demoOff = !ProcessInfo.processInfo.arguments.contains("--demo-pod-on")
         #else
-        demo = false
+        demo = false; demoOff = false
         #endif
     }
-    func canControl(at now: Date = Date()) -> Bool {
-        guard !isWorking, status != nil, let checkedAt else { return false }
-        return now.timeIntervalSince(checkedAt) < 60
+    var isWorking: Bool {
+        switch activity {
+        case .refreshing, .sending: true
+        default: false
+        }
+    }
+    func state(at now: Date = Date()) -> PodControlState {
+        PodControlState(status: status, checkedAt: checkedAt, activity: activity, now: now)
+    }
+    func clear() {
+        status = nil; checkedAt = nil; pendingConfirmation = nil
+        activity = .idle; error = nil; message = nil; didEndSleep = false
     }
     func refresh() async {
         guard !isWorking else { return }
-        isWorking = true; error = nil
-        defer { isWorking = false }
+        if didEndSleep, pendingConfirmation == .endSleep { pendingConfirmation = nil }
+        activity = .refreshing; error = nil
         do {
-            let fresh = demo ? status ?? PodStatus(currentLevel: -20, currentState: .init(type: "smart"))
+            let fresh = demo ? status ?? PodStatus(currentLevel: -20, currentState: .init(type: demoOff ? "off" : "smart:bedtime"))
                 : try await service.podStatus()
             update(fresh)
         } catch {
             status = nil; checkedAt = nil
+            activity = pendingConfirmation.map { .confirming($0) } ?? .idle
             self.error = error.localizedDescription
         }
     }
@@ -40,39 +54,56 @@ final class PodStore: ObservableObject {
         do { await send(.temperature(try PodTemperature.level(fahrenheit: selectedFahrenheit))) }
         catch { self.error = error.localizedDescription }
     }
-    func send(_ action: PodAction) async {
-        guard canControl() else {
-            error = "Refresh live Pod status before sending a command."
-            return
+    @discardableResult
+    func send(_ action: PodAction) async -> Bool {
+        // Recheck on dispatch, including after a confirmation dialog has been open.
+        guard state().allows(action) else {
+            error = "Refresh to check Pod status."
+            return false
         }
-        isWorking = true; error = nil; message = nil
+        activity = .sending(action); error = nil; message = nil
         let previous = status
         status = nil; checkedAt = nil
-        defer { isWorking = false }
         do {
             if demo {
-                switch action {
-                case .temperature(let level): update(PodStatus(currentLevel: level, currentState: .init(type: "smart")))
-                case .turnOn: update(PodStatus(currentLevel: previous?.currentLevel ?? 0, currentState: .init(type: "smart")))
-                case .endSleep: if let previous { update(previous) }
-                case .turnOff: update(PodStatus(currentLevel: previous?.currentLevel ?? 0, currentState: .init(type: "off")))
-                }
+                pendingConfirmation = action
+                let level: Int
+                if case .temperature(let selected) = action { level = selected }
+                else { level = previous?.currentLevel ?? 0 }
+                let type = action == .endSleep || action == .turnOff ? "off" : "smart"
+                update(PodStatus(currentLevel: level, currentState: .init(type: type)))
+                if action == .endSleep { didEndSleep = true }
                 message = "Demo only. No Pod command was sent."
             } else {
                 try await service.control(action)
-                message = action == .endSleep ? "Sleep session ended. Refresh your sleep report; processing may take a moment." : "Command accepted. Cloud status may take a moment to update."
+                pendingConfirmation = action
+                if action == .endSleep { didEndSleep = true }
+                activity = .confirming(action)
+                message = action == .endSleep ? "Sleep ended." : nil
                 do { update(try await service.podStatus()) }
-                catch { self.error = "Command accepted, but status couldn’t be refreshed. Tap Refresh status." }
+                catch { self.error = "Command accepted. Refresh to check status." }
             }
-        } catch is CancellationError { }
-        catch { self.error = error.localizedDescription }
+            return true
+        } catch is CancellationError {
+            activity = .idle
+            return false
+        } catch {
+            activity = .idle
+            self.error = error.localizedDescription
+            return false
+        }
     }
     private func update(_ fresh: PodStatus) {
         guard let fahrenheit = PodTemperature.fahrenheit(level: fresh.currentLevel) else {
-            status = nil; checkedAt = nil; error = SleepError.invalidResponse.localizedDescription
+            status = nil; checkedAt = nil
+            activity = pendingConfirmation.map { .confirming($0) } ?? .idle
+            error = SleepError.invalidResponse.localizedDescription
             return
         }
         status = fresh; checkedAt = Date()
         selectedFahrenheit = min(PodTemperature.range.upperBound, max(PodTemperature.range.lowerBound, Double(fahrenheit)))
+        if let pendingConfirmation, pendingConfirmation.isConfirmed(by: fresh) { self.pendingConfirmation = nil }
+        if fresh.isOn, pendingConfirmation == nil { didEndSleep = false }
+        activity = pendingConfirmation.map { .confirming($0) } ?? .idle
     }
 }

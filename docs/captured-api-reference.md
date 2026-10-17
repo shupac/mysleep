@@ -133,6 +133,15 @@ metric must not silently become zero. Nested sleep field interpretation and
 synthetic tests are described in [provenance.md](provenance.md) and the app's core
 parser; the top-level inventory below does not replace those schemas.
 
+## Later live status clarification — October 17, 2026
+
+A read-only comparison of app `/temperature`, client `/temperature`, and app
+`/temperature/all` returned `currentState.type = "smart:bedtime"` consistently.
+This is additional live evidence, not another request in the archived capture
+inventory below. Treat the `smart:` phase family as active, alongside bare
+`smart`; requiring exact equality to `smart` incorrectly hides active controls.
+No personal values, tokens, or bed-control writes are part of this clarification.
+
 ## Endpoint inventory
 
 ### `GET https://app-api.8slp.net/v1/audio/categories`

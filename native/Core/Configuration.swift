@@ -26,14 +26,14 @@ struct SavedSession: Codable {
 }
 enum SleepError: Error, LocalizedError, Equatable {
     case notConfigured, invalidConfiguration, authentication, rateLimited, unavailable, invalidResponse, noCompletedReport, secureStorage
-    case noActiveSleep
+    case bedOffSleepUnconfirmed
     case invalidFahrenheit, invalidTemperature, controlsBusy, partialTemperatureChange, controlUnconfirmed
     var errorDescription: String? {
         switch self {
         case .invalidFahrenheit: "Choose a whole-degree temperature from 55°F to 110°F."
         case .invalidTemperature: "Temperature level must be between −100 and 100."
         case .controlsBusy: "Another Pod request is in progress. Please wait."
-        case .noActiveSleep: "No recent active sleep session was found. Refresh your sleep report."
+        case .bedOffSleepUnconfirmed: "The bed accepted the off command, but ending sleep tracking wasn’t confirmed. Refresh your report before retrying."
         case .partialTemperatureChange: "Heating/cooling may be on, but the temperature change wasn’t confirmed. Refresh status before retrying."
         case .controlUnconfirmed: "The Pod request wasn’t confirmed and may have taken effect. Refresh status before retrying."
         case .notConfigured: "Sign in to Eight Sleep in the app on this device first."

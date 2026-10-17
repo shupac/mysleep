@@ -34,15 +34,15 @@ final class AppUITests: XCTestCase {
 }
 
 extension AppUITests {
-    func testPodControlsApplyTemperatureAndConfirmEndSleepInDemo() {
+    func testActiveBedControlsAreInlineAndEndSleepShowsReport() {
         let app = XCUIApplication()
-        app.launchArguments = ["--demo"]
+        app.launchArguments = ["--demo", "--demo-pod-on"]
         app.launch()
-        let controls = app.buttons["podControls"]
-        XCTAssertTrue(controls.waitForExistence(timeout: 10))
-        controls.tap()
         let apply = app.buttons["applyTemperature"]
-        XCTAssertTrue(apply.waitForExistence(timeout: 5))
+        XCTAssertTrue(apply.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["podControls"].exists)
+        XCTAssertFalse(app.buttons["turnOnPod"].exists)
+        XCTAssertFalse(app.staticTexts["SLEEP SCORE"].exists)
         let temperature = app.sliders["temperatureFahrenheit"]
         XCTAssertTrue(temperature.exists)
         XCTAssertTrue(app.staticTexts["76°F"].exists)
@@ -53,10 +53,26 @@ extension AppUITests {
         if !end.isHittable { app.swipeUp() }
         XCTAssertTrue(end.waitForExistence(timeout: 5))
         end.tap()
-        let confirmation = app.buttons["End sleep and process report"]
+        let confirmation = app.buttons["End sleep and turn off bed"]
         XCTAssertTrue(confirmation.waitForExistence(timeout: 5))
         confirmation.tap()
-        XCTAssertTrue(app.buttons["endSleep"].exists)
-        XCTAssertTrue(app.staticTexts["Demo only. No Pod command was sent."].exists)
+        XCTAssertTrue(app.staticTexts["SLEEP SCORE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Total sleep 7h 30m"].exists)
+        XCTAssertFalse(app.buttons["turnOnPod"].exists)
+        XCTAssertFalse(app.buttons["podControls"].exists)
+        XCTAssertFalse(app.buttons["endSleep"].exists)
+        XCTAssertFalse(app.buttons["applyTemperature"].exists)
+        XCTAssertFalse(app.sliders["temperatureFahrenheit"].exists)
+    }
+    func testOffBedShowsReportWithoutPowerOrControlNavigation() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--demo", "--demo-pod-off"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["SLEEP SCORE"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["turnOnPod"].exists)
+        XCTAssertFalse(app.buttons["podControls"].exists)
+        XCTAssertFalse(app.buttons["endSleep"].exists)
+        XCTAssertFalse(app.buttons["applyTemperature"].exists)
+        XCTAssertFalse(app.sliders["temperatureFahrenheit"].exists)
     }
 }

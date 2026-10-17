@@ -15,21 +15,24 @@ struct GetLatestSleepIntent: AppIntent {
 }
 struct EndSleepIntent: AppIntent {
     static var title: LocalizedStringResource = "End Sleep"
-    static var description = IntentDescription("Stop your active Eight Sleep session and start processing your sleep report.")
+    static var description = IntentDescription("Turn off your bed’s heating and cooling, stop any active Eight Sleep session, and start processing your sleep report.")
     static var openAppWhenRun = false
-    static var authenticationPolicy: IntentAuthenticationPolicy = .requiresLocalDeviceAuthentication
+    // HomePod Personal Requests authorizes the caller; this action may run on a locked iPhone.
+    static var authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         try await SleepService.shared.control(.endSleep)
-        return .result(dialog: "Your sleep session has ended. Your report may take a moment to finish processing.")
+        return .result(dialog: "Sleep ended.")
     }
 }
 struct SleepShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(intent: EndSleepIntent(), phrases: [
+            "Done sleeping with \(.applicationName)",
+            "End with \(.applicationName)",
             "End sleep with \(.applicationName)",
             "End sleep in \(.applicationName)"
-        ], shortTitle: "End sleep", systemImageName: "stop.circle")
+        ], shortTitle: "Done sleeping", systemImageName: "stop.circle")
         AppShortcut(intent: GetLatestSleepIntent(), phrases: [
             "How did I sleep with \(.applicationName)",
             "Get my sleep report from \(.applicationName)"

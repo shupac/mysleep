@@ -117,3 +117,86 @@ synthetic requests and responses. Full app build validation was blocked by
 unavailable CoreSimulator services / watchsimulator runtimes in the environment.
 The updated UI confirmation has not been rerun in the simulator. No live Eight
 Sleep request was sent.
+
+
+## Combined bed-off and tracking stop — 2026-10-17
+
+All 58 Swift core tests passed. Coverage verifies power-off precedes interval
+discovery and stopping, power-off still succeeds when no recent active interval
+exists, a failed power-off prevents further requests, and failures after accepted
+power-off report the partial result without replaying the stop write. Existing
+report-cache bypass and consistent-read tests cover the combined action. The
+demo UI test now expects the bed-off state after confirmation. Siri speech
+recognition and a personal shortcut named End sleep still require device setup
+and a physical voice check.
+
+
+## State-driven Pod controls — 2026-10-17
+
+The [state diagram and action matrix](pod-control-state-machine.md) were mapped
+before refactoring. All 64 core tests passed. Two targeted simulator UI tests
+passed on iOS 26.3.1, covering Off → On and temperature adjustment → End sleep → Off,
+including assertions that Turn on, temperature editing, and End sleep are shown
+only in their applicable states. Signed iPhone/Watch builds passed; Off/On fixture
+screens were visually checked. Unknown, stale, changing, and awaiting-confirmation
+states expose no control commands. No live Pod control was exercised.
+
+
+Refresh buttons were subsequently removed from both report and Pod screens.
+Both use pull-to-refresh with vertical bouncing enabled for short content; the
+Pod refresh modifier is attached directly to its ScrollView. Signed builds and
+the two existing Pod UI flows passed, and the update installed on iPhone and
+Apple Watch. Refresh messages now describe pulling down instead of tapping.
+
+
+Watch Refresh buttons have been restored on the report and Pod screens; pull to
+refresh is now iPhone-only. Pod copy was trimmed to state, controls and essential
+feedback. Both device builds, the Watch simulator build and the two Pod UI tests
+passed. The Watch Off layout was visually checked: Pod off, Turn on, Refresh.
+The update installed on both physical devices.
+
+
+Pod power headings were subsequently moved to the main page’s controls entry.
+The main page and detail view share a PodStore, including confirmed command
+readback and status freshness. Both device builds and two Pod UI tests passed;
+the return-navigation test verifies Off on the main entry after End sleep.
+
+
+## Single home-screen flow — 2026-10-17
+
+Turn on and separate Pod controls navigation were removed from the native app.
+Active beds show temperature adjustment and End sleep inline, while off beds
+show the latest report. Successful End sleep forces the report request and then
+shows the result. The core off-state action policy now rejects all commands.
+
+64 core tests and all 5 simulator UI tests passed, including inline temperature
+adjustment → End sleep → report, off-bed report with no Turn on/navigation,
+onboarding, offline reports and Settings. Signed iPhone/Watch builds and the
+Watch simulator build passed. The active Watch layout was visually checked.
+No live bed commands were issued during testing.
+
+
+## Phase-qualified active mode — 2026-10-17
+
+Live read-only temperature requests on both API hosts consistently returned
+`smart:bedtime`, which the old exact-`smart` comparison classified unsupported.
+The shared active-mode predicate now handles the nonempty `smart:` family for
+home selection, clearing completed-sleep state and command readback. The on-demo
+fixture uses `smart:bedtime`. All 66 core tests and two targeted UI flows passed,
+as did signed iPhone and Watch builds. The unknown-mode report fallback now
+labels bed status unavailable rather than silently implying the bed is off.
+No live bed control was performed.
+
+
+## Locked-phone HomePod action — 2026-10-17
+
+71 core tests passed, including five synthetic Keychain tests for in-place
+migration preserving saved bytes, no repeated migration writes on locked reads,
+failed migration preserving the old session, new/renewed token accessibility, and
+first-unlock access failure. These tests use injected Security operations and do
+not read or alter the host's actual Keychain. Signed iPhone and Watch builds
+passed; their generated App Intent metadata reports EndSleepIntent policy 0
+(alwaysAllowed), while GetLatestSleepIntent remains policy 2 (local device
+authentication). Report file protection is unchanged. Physical first-unlock,
+locked-keychain access and HomePod voice routing require the on-device test after
+opening the updated app once while unlocked. No live bed command was sent.

@@ -12,7 +12,7 @@ and `MySleepWatch` independent Watch target. Minimum iOS 17 / watchOS 10.
 - Shows the latest completed sleep period from the last 14 days.
 - Displays score, sleep duration, deep/REM/light durations and percentages,
   sleeping heart rate, HRV, respiratory rate, awake time, snoring, and sleep timing.
-- Refreshes on opening/activation; pull to refresh or tap Refresh to bypass the
+- Refreshes on opening/activation; pull to refresh on iPhone or tap Refresh on Watch to bypass the
   five-minute report cache. Provider errors impose a one-minute retry cooldown.
 - Saves the latest report for offline viewing; labels cached, unavailable, and
   old data. Reports are marked stale after 15 minutes without an update or when
@@ -20,38 +20,42 @@ and `MySleepWatch` independent Watch target. Minimum iOS 17 / watchOS 10.
 - Exposes **Get Latest Sleep Report** as an App Intent on both platforms. It
   fetches a report and returns concise spoken text without opening the interface.
 - Stores login credentials and OAuth tokens in each device's Keychain, accessible
-  only while unlocked and not synchronized or migrated to another device.
+  after the first unlock following a restart, including while subsequently locked.
+  Credentials are not synchronized or migrated to another device.
 
 Includes a Watch sleep-score complication. No performance windows, historical
 charts, or background polling are implemented.
 
 ## Control your Pod
 
-Open **Pod controls** at the top of the Watch or iPhone app, even if no completed
-sleep report exists yet. Controls use **the saved Eight Sleep account’s profile**.
-Eight Sleep applies commands to the bed area assigned to that profile, including
-the entire bed when the profile is configured that way. The app does not override
-that assignment or send separate commands to other household profiles.
+The home screen changes with the bed state. When the bed is on, it shows the
+current Fahrenheit setting, a temperature adjustment, and **End sleep**. It hides
+the sleep report until sleep ends. There is no separate Pod controls screen and
+no Turn on action in the native app.
 
-- Read the live mode and reported Fahrenheit setting.
 - Choose **55°F to 110°F** in **1°F steps**, then tap **Apply temperature**.
-  The app translates Fahrenheit to the API’s internal level using pyEight’s
-  nonlinear lookup table. Like eightctl, it first enables smart mode, then sends
-  the converted level. The displayed setting is not a measured water temperature.
-- Tap **Turn on** when heating/cooling is off.
-- Tap **End sleep**, then confirm **End sleep and process report**, to stop the
-  newest incomplete sleep interval from the last 36 hours for your profile.
-  This follows the recorded official app request (`edit: stop`). It is available
-  even when heating/cooling is off. Report processing may take a moment.
+  Fahrenheit uses pyEight's nonlinear lookup table. The reported setting is a
+  setpoint, not measured water temperature. Applying enables smart mode and
+  writes the level.
+- Tap **End sleep**, then confirm **End sleep and turn off bed**. It first sends
+  the existing profile-scoped off command, then stops the newest incomplete
+  interval from the last 36 hours (`edit: stop`). If no interval exists, it still
+  turns heating/cooling off. Partial failures are reported explicitly.
+- Successful End sleep forces a fresh report fetch and displays the latest
+  completed report. The provider may still be processing the newest night; the
+  report's date identifies what is available. Saved fallback reports remain
+  labeled. The app does not poll in the background.
+- When the bed is off, the home screen shows the latest report directly.
 
-The screen requires a live status check from the last minute. Refresh it if it
-becomes stale. Controls aren’t cached for offline operation and no commands are
-queued for later delivery. A successful response means the cloud accepted the
-command; readback may briefly show the old state. If a request times out, refresh
-status before trying again, because it may already have taken effect. A partial
-temperature change is reported explicitly if smart mode succeeds but the level
-write fails. The app renews a rejected token once but does not automatically replay
-writes on network errors, HTTP 429, or HTTP 5xx.
+Refresh uses a **button on Apple Watch** and **pull to refresh on iPhone**. It
+checks live power first, then fetches a report when applicable. Temperature
+controls require status younger than a minute; stale or unconfirmed states
+require refresh before another command. Unknown/error states expose no bed
+commands, while allowing the latest available report to remain accessible.
+Commands are scoped to the saved account's profile and follow its provider bed
+assignment. No commands are queued offline, and writes aren't automatically
+replayed after ambiguous network/server errors. See the
+[home state diagram](docs/pod-control-state-machine.md) for transitions.
 
 ## Install on your devices
 
@@ -141,12 +145,37 @@ paired-device check; they cannot be established by a simulator build alone.
 
 To use **“Hey Siri, End sleep”**, create a shortcut named **End sleep** with the
 **MySleep → End Sleep** action. Enable **Show on Apple Watch** in its details
-to use it there. The built-in phrases **“End sleep with MySleep”** and
-**“End sleep in MySleep”** are also available without creating a named shortcut.
-The action requires local device authentication and uses the same profile-scoped
-interval-stop request as Pod controls. Failures are returned to Siri instead of
+to use it there. Use **“Hey Siri, done sleeping with MySleep”** without creating a personal shortcut.
+The earlier **“End sleep with MySleep”** and **“End sleep in MySleep”** phrases
+also remain available.
+The End Sleep action can run while the device is locked after its first unlock
+following a restart. It uses the same profile-scoped combined bed-off and
+interval-stop operation as the home screen. Failures are returned to Siri instead of
 announcing success. The next report request bypasses the five-minute cache and
 uses `consistent-read=true`, matching the official app after stopping sleep.
+
+### HomePod: “Hey Siri, finish sleeping”
+
+Create a personal shortcut named **Finish sleeping** containing **MySleep → End
+Sleep**. In Home → Home Settings → your name, enable Recognize My Voice and
+Personal Content/Personal Requests for the bedroom HomePod. The iPhone must be
+powered on and connected to the same Wi-Fi network; it can be in another room.
+HomePod routes the shortcut to the phone rather than storing Eight Sleep login
+credentials itself.
+
+**After installing this update, unlock the iPhone and open MySleep once.** This
+migrates existing Keychain items in place to
+`AfterFirstUnlockThisDeviceOnly`, preserving the saved account and tokens. After
+a restart, unlock the iPhone once again; it can then stay locked. New sign-ins and
+token renewals use the same device-only accessibility class. No iCloud Keychain
+sync or backup transfer is enabled.
+
+Only End Sleep uses `alwaysAllowed`; reading sleep reports through Siri still
+requires local device authentication. Cached reports keep complete file
+protection. HomePod Personal Requests and voice recognition remain Apple's
+separate settings and may impose their own authentication requirements. Enabling
+the app action while locked does not bypass those HomePod settings. A physical
+HomePod test is required to confirm routing and behavior for your configuration.
 
 ## Local verification
 
